@@ -1,0 +1,96 @@
+version: '2'
+
+services:
+  elasticsearch:
+    image: elasticsearch:latest
+    container_name: elasticsearch
+    volumes:
+      - /ELK/conf.d/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - /ELK/data/elasticsearch/:/usr/share/elasticsearch/data/
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    networks:
+      - ELK
+    cap_add:
+      - IPC_LOCK
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    logging: 
+      options:
+        max-size: "100m"
+        max-file: "2"
+    environment:
+      ES_JAVA_OPTS: "-Xms2g -Xmx2g"
+
+  kibana:
+    image: kibana:latest
+    volumes:
+      - /ELK/conf.d/kibana/:/opt/kibana/config/
+    container_name: kibana
+    logging:
+      options:
+        max-size: "100m"
+        max-file: "2"
+    ports:
+      - "5601:5601"
+    networks:
+      - ELK
+    depends_on:
+      - elasticsearch
+
+  bro:
+    image: mikemitchell523/bro:2.5
+    container_name: bro
+    volumes:
+      - /ELK/logs/bro/:/ELK/logs/bro/
+      - /ELK/logs/bro/spool:/ELK/logs/bro/spool
+      - /ELK/conf.d/bro/:/usr/local/bro/etc
+      - /ELK/conf.d/bro/site:/usr/local/bro/share/bro/site
+    cap_add:
+      - NET_RAW
+      - NET_ADMIN
+    logging:
+      options:
+        max-size: "100m"
+        max-file: "2"
+    network_mode: "host"
+    command: /entrypoint.sh
+  
+  filebeat:
+    image: mikemitchell523/filebeat:5.0.2
+    container_name: filebeat
+    volumes:
+      - /ELK/logs/bro/:/ELK/logs/bro/
+      - /ELK/conf.d/filebeat/filebeat.yml:/etc/filebeat/filebeat.yml
+    logging:
+      options:
+        max-size: "100m"
+        max-file: "2"
+    networks:
+      - ELK
+    command: /entrypoint.sh
+
+  logstash:
+    image: logstash:latest
+    container_name: logstash
+    networks:
+      - ELK
+    volumes:
+      - /ELK/conf.d/logstash/bro.conf:/etc/logstash/conf.d/bro.conf
+    ports:
+      - "5044:5044"
+    logging:
+      options:
+        max-size: "100m"
+        max-file: "2" 
+    command: logstash -f /etc/logstash/conf.d
+
+
+
+networks:
+  ELK:
+    driver: bridge
+
