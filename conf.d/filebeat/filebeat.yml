@@ -1,14 +1,14 @@
 filebeat.prospectors:
 - input_type: log
   paths:
-    - /siemlane/logs/bro/current/conn.log
-    - /siemlane/logs/bro/current/dns.log
-    - /siemlane/logs/bro/current/http.log
-    - /siemlane/logs/bro/current/files.log
-    - /siemlane/logs/bro/current/notice.log
-    - /siemlane/logs/bro/current/software.log
-    - /siemlane/logs/bro/current/ssh.log
-    - /siemlane/logs/bro/current/ssl.log
-    - /siemlane/logs/bro/current/weird.log
+    - /ELK/logs/bro/current/conn.log
+    - /ELK/logs/bro/current/dns.log
+    - /ELK/logs/bro/current/http.log
+    - /ELK/logs/bro/current/files.log
+    - /ELK/logs/bro/current/notice.log
+    - /ELK/logs/bro/current/software.log
+    - /ELK/logs/bro/current/ssh.log
+    - /ELK/logs/bro/current/ssl.log
+    - /ELK/logs/bro/current/weird.log
 output.logstash:
   hosts: ["logstash:5044"]
