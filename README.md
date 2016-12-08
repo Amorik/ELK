@@ -1,7 +1,7 @@
 # ELK5.0 SIEM with Bro IDS
 
 #Setup
-Set the interface for Bro and Suricata in the following locations. <br />
+Set the interface for Bro in the following locations. <br />
 Bro:<br/>
 
 Edit the "node.cfg" file in the /ELK/conf.d/bro/ directory.<br/>
